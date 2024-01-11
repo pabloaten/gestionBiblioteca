@@ -1,4 +1,6 @@
-package org;
+package entity;
+
+import entity.LibroDTO;
 
 import javax.persistence.*;
 import java.util.Collection;
