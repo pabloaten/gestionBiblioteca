@@ -1,4 +1,9 @@
 package controllers;
 
-public class UsuarioController {
+import entity.UsuarioDTO;
+
+import java.util.List;
+
+public interface UsuarioController {
+    List<UsuarioDTO> leerAllUsuarios();
 }

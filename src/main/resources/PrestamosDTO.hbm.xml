@@ -8,10 +8,10 @@
         <id name="idPrestamo">
             <column name="idPrestamo" sql-type="int"/>
         </id>
-        <property name="idLibro">
+        <property name="idLibro"  insert="false" update="false">
             <column name="idLibro" sql-type="int" not-null="true"/>
         </property>
-        <property name="idUsuario">
+        <property name="idUsuario"  insert="false" update="false">
             <column name="idUsuario" sql-type="int" not-null="true"/>
         </property>
         <property name="fechaPrestamo">

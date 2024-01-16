@@ -1,294 +1,230 @@
 package views;
 
-
+import entity.UsuarioDTO;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.*;
-import java.io.IOException;
-import java.sql.SQLException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
-/**
- * Formulario principal de la aplicación, en el se implementarán las opciones
- * de menú necesarias para poder utilizar la aplicación de BIBLIOTECA
- * @author AGE
- * @version 2
- */
-public class FormMain extends JFrame implements ActionListener, FocusListener, WindowListener,KeyListener {
+public class FormMain extends JFrame {
+    private DefaultTableModel tableModel;
     private static FormMain main=null;
-    private static final int WIDTH = 1024;
-    private static final int HEIGHT = 756;
-    private JDesktopPane desktopPane = new JDesktopPane();
 
-    private JMenu mArchivo;{
-        mArchivo=new JMenu("Archivo");
-        mArchivo.setMnemonic('A');
-    }
-
-    private JMenuItem miAbrir;{
-        miAbrir=new JMenuItem("Abrir..");
-        miAbrir.setMnemonic('A');
-        miAbrir.setFocusable(true);
-        miAbrir.addActionListener(this);
-        miAbrir.addFocusListener(this);
-        //mArchivo.add(miAbrir); TODO pendiente de implementar
-    }
-    private JMenuItem miGuardarLibro;{
-        miGuardarLibro =new JMenuItem("Guardar libros..");
-        miGuardarLibro.setMnemonic('G');
-        miGuardarLibro.setFocusable(true);
-        miGuardarLibro.addActionListener(this);
-        miGuardarLibro.addFocusListener(this);
-        mArchivo.add(miGuardarLibro);
-    }
-    private JMenuItem miConexion;{
-        miConexion =new JMenuItem("Conectar");
-        miConexion.setMnemonic('C');
-        miConexion.addActionListener(this);
-        mArchivo.addSeparator();
-        mArchivo.add(miConexion);
-    }
-    private JMenuItem miSalir;{
-        miSalir=new JMenuItem("Salir");
-        miSalir.setMnemonic('S');
-        miSalir.setFocusable(true);
-        miSalir.addActionListener(this);
-        miSalir.addFocusListener(this);
-        mArchivo.addSeparator();
-        mArchivo.add(miSalir);
-    }
-    private JMenu mCategorias;{
-        mCategorias =new JMenu("Categorias");
-        mCategorias.setMnemonic('U');
-        mCategorias.setFocusable(true);
-        mCategorias.addFocusListener(this);
-    }
-    private JMenuItem miListaCategorias;{
-        miListaCategorias=new JMenuItem("Lista");
-        miListaCategorias.setMnemonic('L');
-        miListaCategorias.setFocusable(true);
-        miListaCategorias.addActionListener(this);
-        miListaCategorias.addFocusListener(this);
-        mCategorias.add(miListaCategorias);
-
-    }
-    private JMenuItem miNuevaCategoria;{
-        miNuevaCategoria =new JMenuItem("Nuevo");
-        miNuevaCategoria.setMnemonic('N');
-        miNuevaCategoria.setFocusable(true);
-        miNuevaCategoria.addActionListener(this);
-        miNuevaCategoria.addFocusListener(this);
-        mCategorias.add(miNuevaCategoria);
-    }
-    private JMenu mUsuarios;{
-        mUsuarios =new JMenu("Usuarios");
-        mUsuarios.setMnemonic('U');
-        mUsuarios.setFocusable(true);
-        mUsuarios.addFocusListener(this);
-    }
-    private JMenuItem miListaUsuarios;{
-        miListaUsuarios=new JMenuItem("Lista");
-        miListaUsuarios.setMnemonic('L');
-        miListaUsuarios.setFocusable(true);
-        miListaUsuarios.addActionListener(this);
-        miListaUsuarios.addFocusListener(this);
-        mUsuarios.add(miListaUsuarios);
-
-    }
-    private JMenuItem miNuevoUsuario;{
-        miNuevoUsuario=new JMenuItem("Nuevo");
-        miNuevoUsuario.setMnemonic('N');
-        miNuevoUsuario.setFocusable(true);
-        miNuevoUsuario.addActionListener(this);
-        miNuevoUsuario.addFocusListener(this);
-        mUsuarios.add(miNuevoUsuario);
-
-    }
-    private JMenu mLibros;{
-        mLibros =new JMenu("Libros");
-        mLibros.setMnemonic('L');
-        mLibros.setFocusable(true);
-        mLibros.addFocusListener(this);
-    }
-    private JMenuItem miListaLibros;{
-        miListaLibros=new JMenuItem("Lista");
-        miListaLibros.setMnemonic('L');
-        miListaLibros.setFocusable(true);
-        miListaLibros.addActionListener(this);
-        miListaLibros.addFocusListener(this);
-        mLibros.add(miListaLibros);
-
-    }
-    private JMenuItem miNuevoLibro;{
-        miNuevoLibro=new JMenuItem("Nuevo");
-        miNuevoLibro.setMnemonic('N');
-        miNuevoLibro.setFocusable(true);
-        miNuevoLibro.addActionListener(this);
-        miNuevoLibro.addFocusListener(this);
-        mLibros.add(miNuevoLibro);
-    }
-    private JMenu mPrestamos;{
-        mPrestamos =new JMenu("Préstamos");
-        mPrestamos.setMnemonic('P');
-        mPrestamos.setFocusable(true);
-        mPrestamos.addFocusListener(this);
-    }
-    private JMenuItem miListaPrestamos;{
-        miListaPrestamos=new JMenuItem("Lista");
-        miListaPrestamos.setMnemonic('L');
-        miListaPrestamos.setFocusable(true);
-        miListaPrestamos.addActionListener(this);
-        miListaPrestamos.addFocusListener(this);
-        mPrestamos.add(miListaPrestamos);
-    }
-    private JMenuItem miNuevoPrestamo;{
-        miNuevoPrestamo = new JMenuItem("Nuevo");
-        miNuevoPrestamo.setMnemonic('N');
-        miNuevoPrestamo.setFocusable(true);
-        miNuevoPrestamo.addActionListener(this);
-        miNuevoPrestamo.addFocusListener(this);
-        mPrestamos.add(miNuevoPrestamo);
-    }
-    private JMenuBar jMenuBar;{
-        jMenuBar = new JMenuBar();
-        jMenuBar.add(mArchivo);
-        jMenuBar.add(mCategorias);
-        jMenuBar.add(mUsuarios);
-        jMenuBar.add(mLibros);
-        jMenuBar.add(mPrestamos);
-        jMenuBar.addFocusListener(this);
-    }
-
-    private FormMain(){
-        setVentana();
-        setContenedores();
-        actualizaFormulario(false);
-        addEventos();
-    }
-
-    private void addEventos() {
-        addWindowListener(this);
-        getContentPane().setFocusable(true);
-        getContentPane().addKeyListener(this);
-        getContentPane().addFocusListener(this);
-    }
-
-    private void setContenedores() {
-        setLayout(new BorderLayout());
-        add(jMenuBar,BorderLayout.NORTH);
-        add(desktopPane,BorderLayout.CENTER);
-
-    }
-
-    private void setVentana() {
-        setTitle("Aplicación de gestión de una biblioteca: ");
+    public FormMain() {
+        setTitle("Gestion de Biblioteca");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(600, 400);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        setBounds(0,0,WIDTH,HEIGHT);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
+
+        // Configuración de Hibernate
+        final SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+
+        // Crear el modelo de la tabla
+        tableModel = new DefaultTableModel();
+        tableModel.addColumn("ID");
+        tableModel.addColumn("Nombre");
+        tableModel.addColumn("Apellidos");
+
+        // Crear la barra de menú
+        JMenuBar menuBar = new JMenuBar();
+        setJMenuBar(menuBar);
+
+        // Crear el menú "Usuarios"
+        JMenu menuUsuarios = new JMenu("Usuarios");
+        menuBar.add(menuUsuarios);
+
+        // Crear la opción "Mostrar Tabla" dentro del menú
+        JMenuItem mostrarTablaItem = new JMenuItem("Mostrar Tabla");
+        menuUsuarios.add(mostrarTablaItem);
+
+        // Agregar ActionListener para la opción "Mostrar Tabla"
+        mostrarTablaItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Lógica para cargar y mostrar la tabla en una nueva ventana
+                mostrarTabla(sessionFactory);
+            }
+        });
+
+        // Crear la opción "Editar" dentro del menú
+        JMenuItem editarItem = new JMenuItem("Editar");
+        menuUsuarios.add(editarItem);
+
+        // Agregar ActionListener para la opción "Editar"
+        editarItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Lógica para mostrar el formulario de edición
+                mostrarFormularioEdicion();
+            }
+        });
+
+        // Hacer visible la ventana principal
+        setVisible(true);
+        // Agregar este bloque de código al constructor de FormMain antes de hacer visible la ventana principal
+
+
     }
 
-    public JDesktopPane getDesktopPane() {
-        return desktopPane;
-    }
 
-    /**
-     * Este método habilitará o desactivará las distintas
-     * opciones de menú del programa según corresponda
-     */
-    public void actualizaFormulario(boolean conectado) {
-        miConexion.setEnabled(!conectado);
-        miAbrir.setEnabled(conectado);
-        mCategorias.setEnabled(conectado);
-        mUsuarios.setEnabled(conectado);
-        mLibros.setEnabled(conectado);
-        mPrestamos.setEnabled(conectado);
-    }
-    /**
-     * Método para la implementación del Singleton del formulario principal
-     * @return el objeto global donde se instancia el formulario de la aplicación
-     */
     public static FormMain getInstance(){
         if (main==null) {
             main = new FormMain();
-
+            //main.loginPassword();
         }
         return main;
     }
+    private void loginPassword() {
+        new LoginPass(this,"Conectar BD:",true).setVisible(true);
+    }
+    public void actualizaFormulario(boolean conectado) {
 
-
-
-    private void salir() {
-        if (JOptionPane.showConfirmDialog(FormMain.getInstance(),
-                "¿Seguro que desea SALIR?",
-                "Atención:",JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
-                System.exit(0);
     }
 
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
+    private void cargarUsuarios(SessionFactory sessionFactory, JTable table) {
+        try (Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
 
+            List<UsuarioDTO> usuarios = session.createQuery("FROM UsuarioDTO", UsuarioDTO.class).list();
+
+            // Limpiar la tabla antes de cargar nuevos datos
+            tableModel.setRowCount(0);
+
+            for (UsuarioDTO usuario : usuarios) {
+                Object[] row = {usuario.getId(), usuario.getNombre(), usuario.getApellidos()};
+                tableModel.addRow(row);
+            }
+
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    @Override
-    public void focusGained(FocusEvent e) {
+    private void mostrarTabla(final SessionFactory sessionFactory) {
+        // Crear un nuevo JFrame para la tabla
+        final JFrame frameTabla = new JFrame("Tabla de Usuarios");
+        frameTabla.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frameTabla.setSize(600, 400);
+        frameTabla.setLocationRelativeTo(this);
 
+        // Crear la tabla con el modelo
+        final JTable table = new JTable(tableModel);
+
+        // Agregar un MouseListener para manejar los clics en las filas
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (SwingUtilities.isRightMouseButton(e) && e.getClickCount() == 1) {
+                    int row = table.rowAtPoint(e.getPoint());
+                    table.getSelectionModel().setSelectionInterval(row, row);
+                    mostrarMenuContextualEliminar(e.getX(), e.getY(), table,sessionFactory);
+                }
+            }
+        });
+
+        // Agregar la tabla a un JScrollPane para permitir desplazamiento si hay muchos registros
+        JScrollPane scrollPane = new JScrollPane(table);
+
+        // Agregar el JScrollPane al panel principal del JFrame de la tabla
+        frameTabla.add(scrollPane, BorderLayout.CENTER);
+
+        // Cargar datos de la base de datos y actualizar la tabla
+        cargarUsuarios(sessionFactory, table);
+
+        // Hacer visible el JFrame de la tabla
+        frameTabla.setVisible(true);
     }
 
-    @Override
-    public void focusLost(FocusEvent e) {
+    private void mostrarMenuContextualEliminar(int x, int y, final JTable table, final SessionFactory sessionFactory) {
+        JPopupMenu menuContextual = new JPopupMenu();
 
+        JMenuItem eliminarItem = new JMenuItem("Eliminar");
+        eliminarItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = table.getSelectedRow();
+                if (selectedRow != -1) {
+                    // Obtener el ID del usuario a eliminar
+                    int userId = (int) table.getValueAt(selectedRow, 0);
+                    System.out.println(userId);
+
+                    // Mostrar un JOptionPane de confirmación
+                    int confirmacion = JOptionPane.showConfirmDialog(
+                            table,
+                            "¿Estás seguro de querer borrar este usuario?",
+                            "Confirmar eliminación",
+                            JOptionPane.YES_NO_OPTION);
+
+                    if (confirmacion == JOptionPane.YES_OPTION) {
+                        // Realizar la acción de eliminación si el usuario confirma
+                        eliminarUsuario(sessionFactory, userId);
+
+                        // Actualizar la tabla después de la eliminación
+                        cargarUsuarios(sessionFactory, table);
+                    }
+                }
+            }
+        });
+
+        menuContextual.add(eliminarItem);
+
+        menuContextual.show(table, x, y);
     }
 
-    @Override
-    public void keyTyped(KeyEvent e) {
+    private void eliminarUsuario(SessionFactory sessionFactory, int userId) {
+        try (Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
 
+            // Cargar el usuario a eliminar
+            UsuarioDTO usuario = session.get(UsuarioDTO.class, userId);
+
+            // Verificar si el usuario existe antes de intentar eliminar
+            if (usuario != null) {
+                // Eliminar el usuario
+                session.delete(usuario);
+
+                // Confirmar la transacción
+                session.getTransaction().commit();
+
+                // Informar sobre la eliminación exitosa
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Usuario eliminado exitosamente",
+                        "Eliminación exitosa",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                // Informar que el usuario no existe
+                JOptionPane.showMessageDialog(
+                        this,
+                        "El usuario no existe",
+                        "Error al eliminar",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            // Manejar cualquier excepción que pueda ocurrir durante la eliminación
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Error al eliminar el usuario",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
 
-    @Override
-    public void keyPressed(KeyEvent e) {
 
-    }
 
-    @Override
-    public void keyReleased(KeyEvent e) {
 
-    }
-
-    @Override
-    public void windowOpened(WindowEvent e) {
-
-    }
-
-    @Override
-    public void windowClosing(WindowEvent e) {
-
-    }
-
-    @Override
-    public void windowClosed(WindowEvent e) {
-
-    }
-
-    @Override
-    public void windowIconified(WindowEvent e) {
-
-    }
-
-    @Override
-    public void windowDeiconified(WindowEvent e) {
-
-    }
-
-    @Override
-    public void windowActivated(WindowEvent e) {
-
-    }
-
-    @Override
-    public void windowDeactivated(WindowEvent e) {
-
+    private void mostrarFormularioEdicion() {
+        // Implementa la lógica para mostrar el formulario de edición como lo hiciste anteriormente
     }
 }
